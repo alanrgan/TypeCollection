@@ -166,6 +166,12 @@ public class MainController implements Initializable  {
 	@FXML
 	public void startNewTrial() {
 		trialManager.startNewTrial();
+		keyToStartTime.clear();
+		sentenceInput.clear();
+		sentenceBox.getChildren().clear();
+		
+		sendRequest(mServerManager, new CollectionRequest(RequestType.NEW_TRIAL));
+		
 		Sentence firstSentence;
 		if((firstSentence = trialManager.getFirstSentence()) != null)
 			sentenceBox.getChildren().addAll(firstSentence.getComponents());

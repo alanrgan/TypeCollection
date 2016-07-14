@@ -85,8 +85,11 @@ public class TrialManager {
 	public void startNewTrial() {
 		cSentIdx = 0;
 		dataPoints.clear();
+		KeyIMUData.resetCount();
+		
 		for (Sentence sent : sentences) {
 			sent.resetIterations();
+			sent.clearFormatting();
 		}
 	}
 	

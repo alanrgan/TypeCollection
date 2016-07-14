@@ -22,6 +22,10 @@ public class KeyIMUData {
 		id = ++count;
 	}
 	
+	public static void resetCount() {
+		count = 0;
+	}
+	
 	public String asCSV() {
 		String result = "";
 		int endIdx = Math.min(accelValues.size(), gyroValues.size());

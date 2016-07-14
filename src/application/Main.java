@@ -28,6 +28,8 @@ public class Main extends Application {
 				@Override
 				public void handle(WindowEvent arg0) {
 					mController.close();
+					Platform.exit();
+					System.exit(0);
 				}
 			});
 			
