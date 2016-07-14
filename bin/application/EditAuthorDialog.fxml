@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="194.0" prefWidth="289.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AuthorController">
+   <children>
+      <Button fx:id="okBtn" layoutX="99.0" layoutY="134.0" mnemonicParsing="false" onAction="#onAuthorInfoSet" prefHeight="25.0" prefWidth="66.0" text="OK" />
+      <Button fx:id="cancelBtn" layoutX="170.0" layoutY="134.0" mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
+      <TextField fx:id="idInput" layoutX="108.0" layoutY="51.0" prefHeight="25.0" prefWidth="120.0" />
+      <TextField fx:id="handednessInput" layoutX="108.0" layoutY="82.0" prefHeight="25.0" prefWidth="120.0" />
+      <Label layoutX="90.0" layoutY="55.0" text="ID" />
+      <Label layoutX="37.0" layoutY="86.0" text="Handedness" />
+   </children>
+</AnchorPane>
