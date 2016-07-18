@@ -21,6 +21,7 @@ public class AuthorController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		controller = (MainController) Main.getLoader().getController();
+		idInput.setPromptText(controller.getAuthorID());
 		handednessInput.setPromptText(controller.getHandedness());
 	}
 	

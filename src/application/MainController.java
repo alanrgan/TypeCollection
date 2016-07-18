@@ -38,6 +38,7 @@ public class MainController implements Initializable  {
 	@FXML private Button nextBtn;
 	@FXML private TextField sentenceInput;
 	@FXML private Label statusLabel;
+	@FXML private Label connStatusLabel;
 	@FXML private AnchorPane ap;
 	@FXML private HBox sentenceBox;
 	
@@ -46,6 +47,21 @@ public class MainController implements Initializable  {
 	
 	private TrialManager trialManager = new TrialManager();
 	private ServerManager mServerManager;
+	
+	private Thread checkConnectionThread = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			while(!Thread.currentThread().isInterrupted()) {
+				try {
+					mServerManager.sendRequest(new CollectionRequest(RequestType.CONNECTION_STATE));
+				} catch (IOException e) {
+					e.printStackTrace();
+					updateConnectionLabel("Connection status: disconnected");
+					checkConnectionThread.interrupt();
+				}
+			}
+		}
+	});
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -58,8 +74,12 @@ public class MainController implements Initializable  {
 			public void handle() {
 				sendRequest(mServerManager, new CollectionRequest()
 						.addParameter("sync", System.currentTimeMillis()));
+				updateConnectionLabel("Connection status: connected");
+				checkConnectionThread.start();
 			}
 		});
+		
+		updateConnectionLabel("Connection status: waiting for clients to connect");
 		
 		mServerManager.startServer();
 		mServerManager.registerListener(new InputListener() {
@@ -204,8 +224,18 @@ public class MainController implements Initializable  {
 		authorHandedness = hand;
 	}
 	
+	private void updateConnectionLabel(final String text) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				connStatusLabel.setText(text);
+			}
+		});
+	}
+	
 	public void close() {
 		try {
+			checkConnectionThread.interrupt();
 			mServerManager.closeConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
