@@ -48,21 +48,6 @@ public class MainController implements Initializable  {
 	private TrialManager trialManager = new TrialManager();
 	private ServerManager mServerManager;
 	
-	private Thread checkConnectionThread = new Thread(new Runnable() {
-		@Override
-		public void run() {
-			while(!Thread.currentThread().isInterrupted()) {
-				try {
-					mServerManager.sendRequest(new CollectionRequest(RequestType.CONNECTION_STATE));
-				} catch (IOException e) {
-					e.printStackTrace();
-					updateConnectionLabel("Connection status: disconnected");
-					checkConnectionThread.interrupt();
-				}
-			}
-		}
-	});
-	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		Server server = new Server();
@@ -75,7 +60,6 @@ public class MainController implements Initializable  {
 				sendRequest(mServerManager, new CollectionRequest()
 						.addParameter("sync", System.currentTimeMillis()));
 				updateConnectionLabel("Connection status: connected");
-				checkConnectionThread.start();
 			}
 		});
 		
@@ -147,10 +131,9 @@ public class MainController implements Initializable  {
 		if(trialManager.hasNextSentence() && !trialManager.isTrialOver()) {
 			Sentence sentence = trialManager.getNextSentence();
 			sentenceBox.getChildren().addAll(sentence.getComponents());
-		} else if(trialManager.isLoaded() && trialManager.isTrialOver()) {
-			sentenceBox.getChildren().clear();
+		} else if(!trialManager.hasNextSentence()) {
 			statusLabel.setText("All Done!");
-		} else {
+		} else if(!trialManager.isLoaded()) {
 			statusLabel.setText("Please load sentences");
 		}
 		sentenceInput.setText("");
@@ -235,7 +218,7 @@ public class MainController implements Initializable  {
 	
 	public void close() {
 		try {
-			checkConnectionThread.interrupt();
+			//checkConnectionThread.interrupt();
 			mServerManager.closeConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
