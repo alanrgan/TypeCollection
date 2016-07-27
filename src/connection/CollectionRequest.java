@@ -11,7 +11,7 @@ public class CollectionRequest implements Serializable {
 	}
 	private RequestType type;
 	
-	HashMap<String, Serializable> parameters = new HashMap<String, Serializable>();
+	HashMap<String, Serializable> parameters = new HashMap<>();
 	
 	public CollectionRequest() {
 		this.type = RequestType.OTHER;

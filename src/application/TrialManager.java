@@ -2,9 +2,11 @@ package application;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,16 +14,20 @@ import java.util.List;
 import javafx.scene.Parent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-
-import util.Point3F;
 import util.Pair;
+import util.Point3F;
 
 public class TrialManager {
 	private List<Sentence> sentences = new ArrayList<Sentence>();
 	private int cSentIdx = 0;
 	private boolean loaded;
+	private MainController mController;
 	
 	private ArrayList<KeyIMUData> dataPoints = new ArrayList<>();
+	
+	public TrialManager(MainController mc) {
+		mController = mc;
+	}
 	
 	public void loadSentences(Parent ap) {
 		clearSentences();
@@ -37,7 +43,8 @@ public class TrialManager {
 				String line;
 				while((line = in.readLine()) != null) {
 					String[] parts = line.split(",");
-					sentences.add(new Sentence(parts[1], Integer.parseInt(parts[0])));
+					if(parts.length == 2)
+						sentences.add(new Sentence(parts[1], Integer.parseInt(parts[0])));
 				}
 				in.close();
 				loaded = true;
@@ -110,19 +117,28 @@ public class TrialManager {
 	}
 	
 	public void exportData(Parent ap) {
+		System.out.println("in exportData in TrialManager");
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save File");
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
 		File selectedFile = fileChooser.showSaveDialog(ap.getScene().getWindow());
+		String fname = selectedFile.getName().replaceFirst("[.][^.]+$","");
 		
+		// serialize imu data in case program crashes while writing
+		serializeIMU(fname);
+		
+		System.out.println("selectedFile is null: " + (selectedFile == null) + " dataPoints empty: " + dataPoints.isEmpty());
 		if(selectedFile != null && !dataPoints.isEmpty()) {
 			try {
 				FileWriter writer = new FileWriter(selectedFile, true);
 				
 				writer.write("SequenceID,Time,x_ddot,y_ddot,z_ddot,theta_dot,phi_dot,psi_dot,label,author-handedness,author-id\r\n");
 				
+				int counter = 1;
 				for(KeyIMUData pt : dataPoints) {
 					writer.write(pt.asCSV());
+					mController.updateStatusLabel(String.format("%.2f%% written%n",counter/(double)dataPoints.size()*100));
+					counter++;
 				}
 				
 				writer.flush();
@@ -130,6 +146,19 @@ public class TrialManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void serializeIMU(String fname) {
+		File dataSerFile = new File(fname+".ser");
+		try {
+			FileOutputStream fOut = new FileOutputStream(dataSerFile);
+			ObjectOutputStream out = new ObjectOutputStream(fOut);
+			out.writeObject(dataPoints);
+			fOut.close();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

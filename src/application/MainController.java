@@ -33,7 +33,7 @@ import javafx.stage.Stage;
 import util.Pair;
 import util.Point3F;
 
-public class MainController implements Initializable  {
+public class MainController implements Initializable {
 	
 	@FXML private Button nextBtn;
 	@FXML private TextField sentenceInput;
@@ -45,7 +45,7 @@ public class MainController implements Initializable  {
 	private String authorID, authorHandedness;
 	private HashMap<String, Long> keyToStartTime = new HashMap<>();
 	
-	private TrialManager trialManager = new TrialManager();
+	private TrialManager trialManager = new TrialManager(this);
 	private ServerManager mServerManager;
 	
 	@Override
@@ -85,6 +85,11 @@ public class MainController implements Initializable  {
 					String keyName = (String)req.getParameter("key");
 					trialManager.addIMUData(keyName, (HashMap<String, ArrayList<Pair<Long, Point3F>>>)req.getParameter("imu"));
 				}
+			}
+			
+			@Override
+			public void onInterrupted(Exception e) {
+				updateStatusLabel("Connection error: " + e.getMessage());
 			}
 		});
 		
@@ -146,28 +151,18 @@ public class MainController implements Initializable  {
 		if((firstSentence = trialManager.getFirstSentence()) != null) {
 			sentenceBox.getChildren().addAll(firstSentence.getComponents());
 		}
+		
+		openEditAuthorDialog();
 	}
 	
 	@FXML
 	public void setAuthorInfo() {
-		Parent root;
-		try {
-			root = FXMLLoader.load(getClass().getResource("/application/EditAuthorDialog.fxml"));
-			
-			Stage stage = new Stage();
-			
-			stage.setTitle("Set Author Info");
-			stage.setScene(new Scene(root, 289, 194));
-			stage.setResizable(false);
-			stage.show();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		openEditAuthorDialog();
 	}
 	
 	@FXML
 	public void startNewTrial() {
+		openEditAuthorDialog();
 		trialManager.startNewTrial();
 		keyToStartTime.clear();
 		sentenceInput.clear();
@@ -184,6 +179,23 @@ public class MainController implements Initializable  {
 	public void exportData() {
 		trialManager.exportData(ap);
 		sendRequest(mServerManager, new CollectionRequest(RequestType.STOP));
+	}
+	
+	public void openEditAuthorDialog() {
+		Parent root;
+		try {
+			root = FXMLLoader.load(getClass().getResource("/application/EditAuthorDialog.fxml"));
+			
+			Stage stage = new Stage();
+			
+			stage.setTitle("Set Author Info");
+			stage.setScene(new Scene(root, 289, 194));
+			stage.setResizable(false);
+			stage.show();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendRequest(ConnectionManager cm, CollectionRequest req) {
@@ -216,9 +228,18 @@ public class MainController implements Initializable  {
 		});
 	}
 	
+	public void updateStatusLabel(final String text) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				statusLabel.setText(text);
+			}
+		});
+	}
+	
 	public void close() {
 		try {
-			//checkConnectionThread.interrupt();
+			sendRequest(mServerManager,new CollectionRequest(RequestType.STOP));
 			mServerManager.closeConnection();
 		} catch (IOException e) {
 			e.printStackTrace();

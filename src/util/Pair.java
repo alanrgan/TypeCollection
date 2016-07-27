@@ -16,4 +16,8 @@ public final class Pair<A,B> implements Serializable {
 	public static <A,B> Pair<A,B> of(A first, B second) {
 		return new Pair<A,B>(first, second);
 	}
+	
+	public String toString() {
+		return "(" + first + "," + second + ")";
+	}
 }

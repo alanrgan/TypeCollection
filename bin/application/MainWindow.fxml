@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane fx:id="ap" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="246.0" prefWidth="503.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<AnchorPane fx:id="ap" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="477.0" prefWidth="762.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <children>
       <TextField fx:id="sentenceInput" layoutX="56.0" layoutY="138.0" prefHeight="25.0" prefWidth="349.0" />
       <Button fx:id="nextBtn" layoutX="416.0" layoutY="138.0" mnemonicParsing="false" text="Next" />
@@ -29,7 +29,7 @@
             </Menu>
         </menus>
       </MenuBar>
-      <HBox fx:id="sentenceBox" layoutX="57.0" layoutY="33.0" prefHeight="100.0" prefWidth="399.0" />
+      <HBox fx:id="sentenceBox" layoutX="57.0" layoutY="33.0" prefHeight="100.0" prefWidth="692.0" />
       <Label fx:id="statusLabel" layoutX="238.0" layoutY="176.0" />
       <Label fx:id="connStatusLabel" contentDisplay="CENTER" layoutX="35.0" layoutY="215.0" prefHeight="17.0" prefWidth="443.0" text="Connection status:" textAlignment="CENTER" />
    </children>
